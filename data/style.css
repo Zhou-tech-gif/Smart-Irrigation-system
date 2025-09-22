@@ -1,0 +1,69 @@
+/* Global page styling */
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f8f5;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  background: #2e7d32;
+  color: white;
+  padding: 20px;
+  margin: 0;
+}
+
+h2 {
+  color: #333;
+  margin-top: 30px;
+}
+
+/* Section blocks */
+section {
+  background: white;
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+button {
+  font-size: 18px;
+  padding: 12px 25px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
+
+/* Form inputs */
+input {
+  font-size: 16px;
+  padding: 8px;
+  margin: 8px 0;
+  width: 60%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+/* Status box */
+pre {
+  background: #eee;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 18px;
+  max-width: 400px;
+  margin: 20px auto;
+  white-space: pre-line;
+}
