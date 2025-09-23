@@ -148,6 +148,7 @@ void setPersistedThresholds(int onPct, int offPct) {
 void saveMode() {
   prefs.begin("moisture", false);
   prefs.putInt("mode", irrigationMode);
+  Serial.printf("\nmode changed to %s\n", modeName(irrigationMode));
   prefs.end();
 }
 
@@ -162,7 +163,6 @@ void loadSchedule() {
   irrigationHour = prefs.getInt("hour", 7);
   irrigationMinute = prefs.getInt("minute", 0);
   irrigationDuration = prefs.getInt("duration", 120000);
-  prefs.end();
 }
 
 void initIrrigation() {
@@ -180,4 +180,24 @@ void initIrrigation() {
   prefs.end();
 
   lastRelayChangeTime = millis();
+}
+
+void printSchedule() {
+  Serial.printf("Irrigation scheduled at %02d:%02d\n", irrigationHour, irrigationMinute);
+  Serial.printf("Irrigation will run for %d ms\n", irrigationDuration);
+}
+
+
+
+const char* modeName(IrrigationMode mode) {
+  switch(mode) {
+    case MODE_MANUAL:  
+     return "MANUAL";
+    case MODE_MOISTURE:
+     return "MOISTURE";
+    case MODE_TIMER:   
+     return "TIMER";
+    default:     
+         return "UNKNOWN";
+  }
 }

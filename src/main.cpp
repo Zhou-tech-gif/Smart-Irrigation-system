@@ -38,7 +38,7 @@ void loop() {
   }
 
   Serial.printf("Raw: %d, Moisture: %d%%, Relay: %s\n",
-                raw, pct, relayState ? "ON" : "OFF");
+              raw, pct, relayState ? "ON" : "OFF");
 
   server.handleClient();
   delay(1500);

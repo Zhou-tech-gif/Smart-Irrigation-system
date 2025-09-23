@@ -25,6 +25,15 @@
 
   <!-- Schedule Form -->
   <section>
+    <h2>Set moisture on & off values</h2>
+    <form action="/setThresholds" method="post">
+        ON %: <input type="number" name="on"><br>
+        OFF %: <input type="number" name="off">
+    <input type="submit" value="Save">
+    </form>
+ 
+  </section>
+  <section>
     <h2>Set Irrigation Schedule</h2>
     <form action="/setSchedule" method="POST">
       <label for="hour">Hour (0–23):</label>
@@ -38,6 +47,7 @@
 
       <button type="submit">Save Schedule</button>
     </form>
+
   </section>
 </body>
 </html>

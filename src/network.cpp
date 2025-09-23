@@ -74,13 +74,24 @@ void setupWebServer() {
       prefs.putInt("hour", irrigationHour);
       prefs.putInt("minute", irrigationMinute);
       prefs.putInt("duration", irrigationDuration);
+      printSchedule();
       prefs.end();
+
 
       server.send(200, "text/plain", "Schedule updated!");
     } else {
       server.send(400, "text/plain", "Missing parameters");
     }
   });
+  
+  server.on("/setThresholds", HTTP_POST, []() {
+    int onPct = server.arg("on").toInt();
+    int offPct = server.arg("off").toInt();
+    setPersistedThresholds(onPct, offPct);
+    server.send(200, "text/plain", "Thresholds updated");
+});
+
+
 
   server.begin();
 }
