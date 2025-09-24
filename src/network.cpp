@@ -8,6 +8,8 @@ WebServer server(80);
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 19800;
 const int daylightOffset_sec = 0;
+int raw = readAvg();
+int pct = rawToPercent(raw,4095,1500);
 
 void connectWiFi(const char* ssid, const char* password) {
   WiFi.begin(ssid, password);
@@ -89,7 +91,12 @@ void setupWebServer() {
     int offPct = server.arg("off").toInt();
     setPersistedThresholds(onPct, offPct);
     server.send(200, "text/plain", "Thresholds updated");
-});
+}); 
+    server.on("/moisture", []() {
+    String json = "{\"moisture\":" + String(pct) + "}";
+    server.send(200, "application/json", json);
+  });
+  
 
 
 

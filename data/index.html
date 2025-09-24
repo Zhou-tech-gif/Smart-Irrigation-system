@@ -8,13 +8,7 @@
 <body>
   <h1>🌱 ESP32 Irrigation Controller</h1>
 
-  <!-- Relay Control -->
-  <section>
-    <h2>Manual Relay Control</h2>
-    <button onclick="fetch('/4/on')">Turn ON</button>
-    <button onclick="fetch('/4/off')">Turn OFF</button>
-  </section>
-
+  
   <!-- Mode Selection -->
   <section>
     <h2>Mode Selection</h2>
@@ -22,9 +16,18 @@
     <button onclick="fetch('/mode/moisture')">Moisture Based</button>
     <button onclick="fetch('/mode/timer')">Timer Based</button>
   </section>
+  
+  <!-- Relay control -->
+   <section>
+    <h2>Manual Relay Control</h2>
+    <button onclick="fetch('/4/on')">Turn ON</button>
+    <button onclick="fetch('/4/off')">Turn OFF</button>
+  </section>
+
 
   <!-- Schedule Form -->
   <section>
+    <p size="18">Soil Moisture : <span id="value">--</span></p>
     <h2>Set moisture on & off values</h2>
     <form action="/setThresholds" method="post">
         ON %: <input type="number" name="on"><br>

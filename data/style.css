@@ -67,3 +67,6 @@ pre {
   margin: 20px auto;
   white-space: pre-line;
 }
+p{
+  font-size: 150%;
+}
