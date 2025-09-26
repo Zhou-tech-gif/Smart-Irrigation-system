@@ -2,8 +2,10 @@
 #include "irrigation.h"
 #include <SPIFFS.h>
 #include <time.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
 
-WebServer server(80);
+AsyncWebServer server(80);
 
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 19800;
@@ -34,42 +36,43 @@ void setupWebServer() {
     return;
   }
 
-  server.serveStatic("/", SPIFFS, "/index.html");
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
   server.serveStatic("/style.css", SPIFFS, "/style.css");
 
-  server.on("/4/on", []() {
+  server.on("/4/on", HTTP_GET, [](AsyncWebServerRequest *request){
     setRelay(true);
-    server.send(200, "text/plain", "Relay ON");
+    request->send(200, "text/plain", "Relay ON");
   });
 
-  server.on("/4/off", []() {
+  server.on("/4/off", HTTP_GET, [](AsyncWebServerRequest *request){
     setRelay(false);
-    server.send(200, "text/plain", "Relay OFF");
+    request->send(200, "text/plain", "Relay OFF");
   });
 
-  server.on("/mode/manual", []() {
+  server.on("/mode/manual", HTTP_GET, [](AsyncWebServerRequest *request){
     irrigationMode = MODE_MANUAL;
     saveMode();
-    server.send(200, "text/plain", "Mode = MANUAL");
+    request->send(200, "text/plain", "Mode = MANUAL");
   });
 
-  server.on("/mode/moisture", []() {
+  server.on("/mode/moisture", HTTP_GET, [](AsyncWebServerRequest *request){
     irrigationMode = MODE_MOISTURE;
     saveMode();
-    server.send(200, "text/plain", "Mode = MOISTURE");
+    request->send(200, "text/plain", "Mode = MOISTURE");
   });
 
-  server.on("/mode/timer", []() {
+  server.on("/mode/timer", HTTP_GET, [](AsyncWebServerRequest *request){
     irrigationMode = MODE_TIMER;
     saveMode();
-    server.send(200, "text/plain", "Mode = TIMER");
+    request->send(200, "text/plain", "Mode = TIMER");
   });
 
-  server.on("/setSchedule", HTTP_POST, []() {
-    if (server.hasArg("hour") && server.hasArg("minute") && server.hasArg("duration")) {
-      irrigationHour = server.arg("hour").toInt();
-      irrigationMinute = server.arg("minute").toInt();
-      irrigationDuration = server.arg("duration").toInt() * 1000;
+  // Handle POST for schedule
+  server.on("/setSchedule", HTTP_POST, [](AsyncWebServerRequest *request){
+    if (request->hasParam("hour", true) && request->hasParam("minute", true) && request->hasParam("duration", true)) {
+      irrigationHour = request->getParam("hour", true)->value().toInt();
+      irrigationMinute = request->getParam("minute", true)->value().toInt();
+      irrigationDuration = request->getParam("duration", true)->value().toInt() * 1000;
 
       Preferences prefs;
       prefs.begin("schedule", false);
@@ -79,26 +82,28 @@ void setupWebServer() {
       printSchedule();
       prefs.end();
 
-
-      server.send(200, "text/plain", "Schedule updated!");
+      request->send(200, "text/plain", "Schedule updated!");
     } else {
-      server.send(400, "text/plain", "Missing parameters");
+      request->send(400, "text/plain", "Missing parameters");
     }
   });
-  
-  server.on("/setThresholds", HTTP_POST, []() {
-    int onPct = server.arg("on").toInt();
-    int offPct = server.arg("off").toInt();
+
+  // Handle POST for thresholds
+  server.on("/setThresholds", HTTP_POST, [](AsyncWebServerRequest *request){
+    int onPct = request->getParam("on", true)->value().toInt();
+    int offPct = request->getParam("off", true)->value().toInt();
     setPersistedThresholds(onPct, offPct);
-    server.send(200, "text/plain", "Thresholds updated");
-}); 
-    server.on("/moisture", []() {
-    String json = "{\"moisture\":" + String(pct) + "}";
-    server.send(200, "application/json", json);
+    request->send(200, "text/plain", "Thresholds updated");
   });
-  
 
-
+  // Moisture endpoint
+  server.on("/moisture", HTTP_GET, [](AsyncWebServerRequest *request){
+    int raw = readAvg();
+    int pct = rawToPercent(raw, 4095, 1500);
+    String json = "{\"moisture\":" + String(pct) + "}";
+    request->send(200, "application/json", json);
+  });
 
   server.begin();
 }
+
