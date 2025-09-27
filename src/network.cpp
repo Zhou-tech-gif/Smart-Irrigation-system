@@ -4,15 +4,13 @@
 #include <time.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-
+#include <AsyncTCP.h>
 
 AsyncWebServer server(80);
 
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 19800;
 const int daylightOffset_sec = 0;
-int raw = readAvg();
-int pct = rawToPercent(raw,4095,1500);
 
 void connectWiFi(const char* ssid, const char* password) {
   WiFi.begin(ssid, password);
@@ -68,7 +66,7 @@ void setupWebServer() {
     request->send(200, "text/plain", "Mode = TIMER");
   });
 
-  // Handle POST for schedule
+  // Schedule update
   server.on("/setSchedule", HTTP_POST, [](AsyncWebServerRequest *request){
     if (request->hasParam("hour", true) && request->hasParam("minute", true) && request->hasParam("duration", true)) {
       irrigationHour = request->getParam("hour", true)->value().toInt();
@@ -89,7 +87,7 @@ void setupWebServer() {
     }
   });
 
-  // Handle POST for thresholds
+  // Threshold update
   server.on("/setThresholds", HTTP_POST, [](AsyncWebServerRequest *request){
     int raw = readAvg();
 int pct = rawToPercent(raw,4095,1500);
@@ -99,7 +97,7 @@ int pct = rawToPercent(raw,4095,1500);
     request->send(200, "text/plain", "Thresholds updated");
   });
 
-  // Moisture endpoint
+  // Moisture data
   server.on("/moisture", HTTP_GET, [](AsyncWebServerRequest *request){
     int raw = readAvg();
     int pct = rawToPercent(raw, 4095, 1500);

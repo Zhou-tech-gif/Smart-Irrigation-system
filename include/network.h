@@ -3,19 +3,13 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-#include <ESPAsyncWebServer.h>
+#include <WebServer.h>
 
-extern int irrigationMode;
-extern int irrigationHour;
-extern int irrigationMinute;
-extern int irrigationDuration;
+extern WebServer server;
 
-void setRelay(bool state);
-void saveMode();
-void setPersistedThresholds(int onPct, int offPct);
-int readAvg();
-int rawToPercent(int raw, int max, int min);
-void printSchedule();
+void connectWiFi(const char* ssid, const char* password);
+void initNTP();
+void setupWebServer();
 
 // irrigation modes
 #define MODE_MANUAL   0
