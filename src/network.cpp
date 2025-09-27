@@ -2,8 +2,9 @@
 #include "irrigation.h"
 #include <SPIFFS.h>
 #include <time.h>
-#include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
 
 AsyncWebServer server(80);
 
@@ -90,6 +91,8 @@ void setupWebServer() {
 
   // Handle POST for thresholds
   server.on("/setThresholds", HTTP_POST, [](AsyncWebServerRequest *request){
+    int raw = readAvg();
+int pct = rawToPercent(raw,4095,1500);
     int onPct = request->getParam("on", true)->value().toInt();
     int offPct = request->getParam("off", true)->value().toInt();
     setPersistedThresholds(onPct, offPct);
@@ -106,4 +109,3 @@ void setupWebServer() {
 
   server.begin();
 }
-
